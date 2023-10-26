@@ -5,12 +5,11 @@ import appRouter from './routes/index.js';
 config();
 const app = express();
 
-//middleware
-app.use(express.json());
-
 //remove from production!
 app.use(morgan("dev"));
 
+//middleware
+app.use(express.json());
 app.use("/api/v1", appRouter);
 
 export default app;

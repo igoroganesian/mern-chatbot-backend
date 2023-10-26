@@ -12,9 +12,9 @@ export const getAllUsers = async (req, res, next) => {
     }
 };
 export const userSignup = async (req, res, next) => {
-    //register user
     try {
         const { name, email, password } = req.body;
+        console.log("Inside userSignup function. Request body:", req.body);
         const hashedPassword = await hash(password, 12);
         const user = new User({ name, email, password: hashedPassword });
         await user.save();
