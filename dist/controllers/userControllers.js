@@ -1,7 +1,6 @@
 import User from "../models/User.js";
-import { hash } from "bcrypt";
+import { hash, compare } from "bcrypt";
 export const getAllUsers = async (req, res, next) => {
-    //fetch users from db
     try {
         const users = await User.find();
         return res.status(200).json({ message: "OK", users });
@@ -14,10 +13,30 @@ export const getAllUsers = async (req, res, next) => {
 export const userSignup = async (req, res, next) => {
     try {
         const { name, email, password } = req.body;
-        console.log("Inside userSignup function. Request body:", req.body);
+        const existingUser = await User.findOne({ email });
+        if (existingUser)
+            return res.status(401).send("User already exists");
         const hashedPassword = await hash(password, 12);
         const user = new User({ name, email, password: hashedPassword });
         await user.save();
+        return res.status(201).json({ message: "OK", id: user._id.toString() });
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(400).json({ message: "ERROR", cause: error.message });
+    }
+};
+export const userLogin = async (req, res, next) => {
+    try {
+        const { email, password } = req.body;
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(401).send("User not found");
+        }
+        const isPasswordCorrect = await compare(password, user.password);
+        if (!isPasswordCorrect) {
+            return res.status(403).send("Incorrect password");
+        }
         return res.status(200).json({ message: "OK", id: user._id.toString() });
     }
     catch (error) {
