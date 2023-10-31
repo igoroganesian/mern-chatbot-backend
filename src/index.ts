@@ -7,5 +7,7 @@ console.log("Initiating connection...");
 connectToDatabase()
   .then(() => {
     app.listen(PORT, () => console.log("Server Up & Connected To Database"));
-})
+  })
   .catch((err) => console.log(err));
+
+
